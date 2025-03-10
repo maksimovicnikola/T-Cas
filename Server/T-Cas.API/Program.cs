@@ -1,5 +1,5 @@
+using Microsoft.EntityFrameworkCore;
 using T_Cas.Business.Interfaces;
-using T_Cas.Business.MappingProfiles;
 using T_Cas.Business.Services;
 using T_Cas.Data.DataContext;
 using T_Cas.Data.Repositories.Implementations;
@@ -10,11 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-// TODO: Add database context
-//builder.Services.AddDbContext<TCasContext>(
-//    dbContextOptions => dbContextOptions.UseSqlite("Data Source=../Todo.Data/Todo.db"));
+
+builder.Services.AddDbContext<TCasContext>(
+    dbContextOptions => dbContextOptions.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("T-Cas.Data")
+    ));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<IUserService, UserService>();
 
 // Register AutoMapper
